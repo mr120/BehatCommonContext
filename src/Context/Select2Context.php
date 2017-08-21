@@ -101,7 +101,14 @@ class Select2Context extends BaseContext
 
         $inputField = $page->find('css', $fieldName);
         if (!$inputField) {
-            throw new \Exception(sprintf('No field "%s" found', $field));
+
+            $fieldName = sprintf('select[name="%s"] + i + .select2-container', $field);
+
+            $inputField = $page->find('css', $fieldName);
+
+            if (!$inputField) {
+                throw new \Exception(sprintf('No field "%s" found', $field));
+            }
         }
 
         $choice = $inputField->find('css', '.select2-selection');

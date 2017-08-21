@@ -129,15 +129,17 @@ class Select2Context extends BaseContext
     private function fillSearchField(DocumentElement $page, $field, $value)
     {
         $driver = $this->getSession()->getDriver();
+        $fieldName = sprintf('select[name="%s"] + .select2-container', $field);
+
         if ('Behat\Mink\Driver\Selenium2Driver' === get_class($driver)) {
             // Can't use `$this->getSession()->getPage()->find()` because of https://github.com/minkphp/MinkSelenium2Driver/issues/188
-            $select2Input = $this->getSession()->getDriver()->getWebDriverSession()->element('xpath', "//html/descendant-or-self::*[@class and contains(concat(' ', normalize-space(@class), ' '), ' select2-search__field ')]");
+            $select2Input = $this->getSession()->getDriver()->getWebDriverSession()->element('xpath', "//html/descendant-or-self::*[@class and contains(concat(' ', normalize-space(@class), ' '), '" . $fieldName . " select2-search__field ')]");
             if (!$select2Input) {
                 throw new \Exception(sprintf('No field "%s" found', $field));
             }
             $select2Input->postValue(['value' => [$value]]);
         } else {
-            $select2Input = $page->find('css', '.select2-search__field');
+            $select2Input = $page->find('css', $fieldName . ' .select2-search__field');
             if (!$select2Input) {
                 throw new \Exception(sprintf('No input found for "%s"', $field));
             }
